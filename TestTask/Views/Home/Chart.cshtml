@@ -1,33 +1,28 @@
-﻿@model IDictionary<DateTime, TestTask.DTOs.UserUrlDataDto>
-@{
+﻿@{
     ViewBag.Title = "Chart";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="chart-container"></div>
 
 <script>
+    var categories;
+    var series;
+
     $(document).ready(function () {
         $.ajax(
             {
                 url: '/Home/GetChartDataAjax',
                 type: 'POST',
                 success: function (data) {
-                    var obj1 = data.Keys;
-                    var obj2 = data.Values;
-                    console.log({ data });
-                    console.log({ obj1 });
-                    console.log({ obj2 });
-                    var xValues = [];
 
-                    for (var i = 0; i < data.Keys.length; i++) {
-                        xValues.push(data.Keys[i]);
-                    }
-
-                    console.log(xValues);
-
-                    makeChart(data.Keys, data.Values);
-                    //makeChart();
+                    var c = data.categories;
+                    var s = data.series;
+                    //console.log({ c });
+                    //console.log({ s });
+                    //console.log(c);
+                    //console.log(s);
+                    makeChart(c, s);
                 },
                 error: function (data) {
                     console.log('Bad request', data);
@@ -37,7 +32,7 @@
 
 
     function makeChart(xValues, yValues) {
-        Highcharts.chart('container', {
+        Highcharts.chart('chart-container', {
             chart: {
                 type: 'column'
             },
@@ -45,7 +40,7 @@
                 text: 'Статистика по запросу'
             },
             xAxis: {
-                categories: xValues /* ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas'] //TODO : DATE (day)*/
+                categories: xValues 
             },
             yAxis: {
                 min: 0,
@@ -85,19 +80,6 @@
                 }
             },
             series: yValues
-            //series: [{
-            //    name: '200',
-            //    data: [5, 3, 4, 7, 2]
-            //}, {
-            //    name: 'Jane',
-            //    data: [2, 2, 3, 2, 1]
-            //}, {
-            //    name: 'Joe',
-            //    data: [3, 4, 4, 2, 5]
-            //}]
         });
     }
-
-
-
 </script>

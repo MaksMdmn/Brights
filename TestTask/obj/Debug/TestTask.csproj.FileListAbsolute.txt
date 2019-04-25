@@ -77,4 +77,3 @@ C:\Users\MaksMdmn\source\repos\Brights\TestTask\obj\Debug\TestTask.csproj.CoreCo
 C:\Users\MaksMdmn\source\repos\Brights\TestTask\obj\Debug\TestTask.csproj.CopyComplete
 C:\Users\MaksMdmn\source\repos\Brights\TestTask\obj\Debug\TestTask.dll
 C:\Users\MaksMdmn\source\repos\Brights\TestTask\obj\Debug\TestTask.pdb
-C:\Users\MaksMdmn\source\repos\Brights\TestTask\obj\Debug\TestTask.csprojAssemblyReference.cache

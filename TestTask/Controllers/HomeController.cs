@@ -1,5 +1,6 @@
 ﻿using Microsoft.Ajax.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using TestTask.DTOs;
 using TestTask.Models;
 
@@ -22,7 +24,7 @@ namespace TestTask.Controllers
         public ActionResult Index()
         {
             if (Session[_userStatSessionKey] == null)
-                Session[_userStatSessionKey] = new List<UserUrlData>(); //initialize storage to keep user data. It will be used to make stats after.
+                Session[_userStatSessionKey] = new List<UserUrlData>(); //initialize storage to keep user data. It will be used to form stats after.
 
             return View();
         }
@@ -34,34 +36,63 @@ namespace TestTask.Controllers
         }
 
         [HttpGet]
-        public ActionResult Chart(string userUrl) //TODO still working on additional task...
+        public ActionResult Chart(string userUrl)
         {
             Session[_urlDetailsSessionKey] = userUrl;
             return View();
         }
 
         [HttpPost]
-        public JsonResult GetChartDataAjax() //TODO still working on additional task...
+        public ActionResult GetChartDataAjax()
         {
             string userUrl = Session[_urlDetailsSessionKey] as string;
+
             if (!userUrl.IsNullOrWhiteSpace())
             {
-                var userList = Session[_userStatSessionKey] as List<UserUrlData>;
+                Models.Chart chart = new Models.Chart();
+                chart.series = new List<Series>();
+                List<UserUrlData> userUrlsList = Session[_userStatSessionKey] as List<UserUrlData>;
 
-                var correctUrls = userList.Where(elem => elem.UserUrl == userUrl);
-                var uniqueCodes = correctUrls.Select(elem => elem.StatusCode).Distinct();
+                var suitableUrlsByUserUrl = userUrlsList.Where(elem => elem.UserUrl == userUrl);
+
+                chart.categories = suitableUrlsByUserUrl
+                    .Select(elem => elem.Date.ToShortDateString())
+                    .Distinct()
+                    .ToArray();
+
+                var allUniqueCodes = suitableUrlsByUserUrl.Select(elem => elem.StatusCode).Distinct();
+                List<int> tempList = new List<int>();
+                foreach (var code in allUniqueCodes) //in all unique codes...
+                {
+                    Series series = new Series
+                    {
+                        name = code.ToString()
+                    };
+
+                    foreach (var date in chart.categories) //...by all unique dates...
+                    {
+                        tempList.Add(
+                            suitableUrlsByUserUrl           //...form the right series according to js chart API
+                            .Where(elem => elem.Date.ToShortDateString() == date)
+                            .Where(elem => elem.StatusCode == code)
+                            .Count()
+                            );
+                    }
+
+                    series.data = tempList.ToArray();
+                    chart.series.Add(series);
+                    tempList.Clear();
+                }
 
 
-
-                return new JsonResult();
-
+                return Json(chart, JsonRequestBehavior.AllowGet);
             }
-            return new JsonResult();
+            return Content("Error"); 
         }
 
 
         [HttpPost]
-        public JsonResult GetUserDataFromUrlAjax(string userUrl)
+        public ActionResult GetUserDataFromUrlAjax(string userUrl)
         {
             HttpWebRequest request;
             HttpWebResponse response;
@@ -98,7 +129,7 @@ namespace TestTask.Controllers
                 {
                     HttpWebResponse exceptionResponse = (HttpWebResponse)ex.Response;
                     title = "Не удалось перейти по данному url";
-                    statusCode = exceptionResponse != null ? (int)exceptionResponse.StatusCode : 0;
+                    statusCode = exceptionResponse != null ? (int)exceptionResponse.StatusCode : 403;
                 }
             }
             else
@@ -106,13 +137,6 @@ namespace TestTask.Controllers
                 title = "Некорректный формат url.";
             }
 
-            AddDataToSession(userUrl, title, statusCode);
-
-            return new JsonResult() { Data = new { userUrl, title, statusCode } };
-        }
-
-        private void AddDataToSession(string userUrl, string title, int statusCode)
-        {
             List<UserUrlData> userStatList = Session[_userStatSessionKey] as List<UserUrlData>;
 
             userStatList.Add(new UserUrlData
@@ -122,6 +146,8 @@ namespace TestTask.Controllers
                 Title = title,
                 StatusCode = statusCode
             });
+
+            return new JsonResult() { Data = new { userUrl, title, statusCode } };
         }
     }
 }
