@@ -1,0 +1,6 @@
+C:\Users\MaksMdmn\source\repos\Brights\MovingAvgCalculation2\bin\Debug\MovingAvgCalculation2.exe.config
+C:\Users\MaksMdmn\source\repos\Brights\MovingAvgCalculation2\bin\Debug\MovingAvgCalculation2.exe
+C:\Users\MaksMdmn\source\repos\Brights\MovingAvgCalculation2\bin\Debug\MovingAvgCalculation2.pdb
+C:\Users\MaksMdmn\source\repos\Brights\MovingAvgCalculation2\obj\Debug\MovingAvgCalculation2.csproj.CoreCompileInputs.cache
+C:\Users\MaksMdmn\source\repos\Brights\MovingAvgCalculation2\obj\Debug\MovingAvgCalculation2.exe
+C:\Users\MaksMdmn\source\repos\Brights\MovingAvgCalculation2\obj\Debug\MovingAvgCalculation2.pdb
