@@ -34,14 +34,14 @@ namespace TestTask.Controllers
         }
 
         [HttpGet]
-        public ActionResult Chart(string userUrl)
+        public ActionResult Chart(string userUrl) //TODO still working on additional task...
         {
             Session[_urlDetailsSessionKey] = userUrl;
             return View();
         }
 
         [HttpPost]
-        public JsonResult GetChartDataAjax()
+        public JsonResult GetChartDataAjax() //TODO still working on additional task...
         {
             string userUrl = Session[_urlDetailsSessionKey] as string;
             if (!userUrl.IsNullOrWhiteSpace())
@@ -52,26 +52,6 @@ namespace TestTask.Controllers
                 var uniqueCodes = correctUrls.Select(elem => elem.StatusCode).Distinct();
 
 
-                //Dictionary<string, List<UserUrlDataDto>> statusCodeCountDict = new Dictionary<string, List<UserUrlDataDto>>();
-
-                //(Session[_userStatSessionKey] as List<UserUrlData>).ForEach(uud =>
-                //{
-                //    if (uud.UserUrl == userUrl)
-                //    {
-                //        var key = uud.Date.ToShortDateString(); //only Date as task says (group by days only), in string format to simplify
-
-                //        if (statusCodeCountDict.ContainsKey(key))
-                //            statusCodeCountDict[key].StatusCodeCounter++;
-                //        else
-                //        {
-                //            statusCodeCountDict[key] = new UserUrlDataDto
-                //            {
-                //                StatusCode = uud.StatusCode,
-                //                StatusCodeCounter = 1
-                //            };
-                //        }
-                //    }
-                //});
 
                 return new JsonResult();
 
