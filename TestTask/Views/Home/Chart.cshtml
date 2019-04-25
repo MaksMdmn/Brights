@@ -1,0 +1,103 @@
+﻿@model IDictionary<DateTime, TestTask.DTOs.UserUrlDataDto>
+@{
+    ViewBag.Title = "Chart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+<script>
+    $(document).ready(function () {
+        $.ajax(
+            {
+                url: '/Home/GetChartDataAjax',
+                type: 'POST',
+                success: function (data) {
+                    var obj1 = data.Keys;
+                    var obj2 = data.Values;
+                    console.log({ data });
+                    console.log({ obj1 });
+                    console.log({ obj2 });
+                    var xValues = [];
+
+                    for (var i = 0; i < data.Keys.length; i++) {
+                        xValues.push(data.Keys[i]);
+                    }
+
+                    console.log(xValues);
+
+                    makeChart(data.Keys, data.Values);
+                    //makeChart();
+                },
+                error: function (data) {
+                    console.log('Bad request', data);
+                }
+            })
+    });
+
+
+    function makeChart(xValues, yValues) {
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Статистика по запросу'
+            },
+            xAxis: {
+                categories: xValues /* ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas'] //TODO : DATE (day)*/
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Количество запросов за день (сгруппировано по типу)'
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                headerFormat: '<b>{point.x}</b><br/>',
+                pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                    }
+                }
+            },
+            series: yValues
+            //series: [{
+            //    name: '200',
+            //    data: [5, 3, 4, 7, 2]
+            //}, {
+            //    name: 'Jane',
+            //    data: [2, 2, 3, 2, 1]
+            //}, {
+            //    name: 'Joe',
+            //    data: [3, 4, 4, 2, 5]
+            //}]
+        });
+    }
+
+
+
+</script>

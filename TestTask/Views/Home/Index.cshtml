@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="navigation-container">
+    <p><a href="/Home/Statistics">statistics</a></p>
+</div>
+<div class="main-container">
+    <textarea id="userTxtArea"></textarea>
+    <button id="ajaxCallBtn"> получить информацию </button>
+    <table id="resultTable"></table>
+</div>
+<script>
+    $('#ajaxCallBtn').click(function () {
+        var userText = $('#userTxtArea').val();
+        var urls = userText.split('\n');
+        var table = document.getElementById("resultTable");
+        var tableRowsNumber = table.getElementsByTagName("tr").length;
+        var preloaderElement = "<img src='/Content/15.gif'>";
+
+        //headers of table if needed
+        if (tableRowsNumber == 0) {
+            var hRow = table.insertRow();
+            var hCell1 = hRow.insertCell();
+            var hCell2 = hRow.insertCell();
+            var hCell3 = hRow.insertCell();
+            hCell1.innerHTML = "User's Url";
+            hCell2.innerHTML = "Title";
+            hCell3.innerHTML = "Status Code";
+            tableRowsNumber++; // including this header to tableRowsNumber
+        }
+
+        //fulfil table with data from ajax response
+        var row;
+        var cellUserUrl;
+        var cellTitle;
+        var cellStatusCode;
+
+        for (i = 0; i < urls.length; i++) {
+            row = table.insertRow();
+            cellUserUrl = row.insertCell();
+            cellTitle = row.insertCell();
+            cellStatusCode = row.insertCell();
+
+
+            cellUserUrl.innerHTML = preloaderElement;
+            cellTitle.innerHTML = preloaderElement;
+            cellStatusCode.innerHTML = preloaderElement;
+
+            (function (index) {
+                $.ajax(
+                    {
+                        url: '/Home/GetUserDataFromUrlAjax',
+                        type: 'POST',
+                        data: { userUrl: urls[index] },
+                        success: function (response) {
+                            //change preloader on data from server
+                            table.firstChild.childNodes[index + tableRowsNumber].childNodes[0].innerHTML = response.userUrl;
+                            table.firstChild.childNodes[index + tableRowsNumber].childNodes[1].innerHTML = response.title;
+                            table.firstChild.childNodes[index + tableRowsNumber].childNodes[2].innerHTML = response.statusCode;
+                        },
+                        error: function (data) {
+                            console.log('Bad request', data);
+                        }
+                    })
+            })(i)
+        }
+    });
+
+</script>

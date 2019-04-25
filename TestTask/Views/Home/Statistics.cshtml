@@ -1,0 +1,21 @@
+﻿@model IEnumerable<TestTask.Models.UserUrlData>
+
+@{
+    ViewBag.Title = "Statistics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="main-container">
+    <table id="statisticTable">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Date</td>
+                <td>@Html.ActionLink(item.UserUrl, "Chart", new {userUrl = item.UserUrl })</td>
+                <td>@item.StatusCode</td>
+                <td>@item.Title</td>
+            </tr>
+        }
+    </table>
+</div>
+
